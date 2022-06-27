@@ -20,7 +20,7 @@ ToDo:
   - [ ] OBD Fehlercodes in JSON File
  
 - [ ] Möglichkeit die CSV Dateien einzulesen
-- [ ] Messwerte in JSON File einlesen
+  - [ ] Messwerte in JSON File einlesen
 
 - [ ] Upload der Dateien auf den Server der THGA
 - [ ] GUI Ansehlich gestalten 
