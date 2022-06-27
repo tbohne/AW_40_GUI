@@ -7,6 +7,20 @@ GUI Für das Autowerkstatt 4.0 Projekt
 import tkinter as tk
 import json
 from tkinter import filedialog as fd
+from parse import Parse_OBD
+import pandas as pd
+import pathlib
+from pathlib import Path
+from datetime import datetime
+import os
+
+
+
+
+di = {}
+obd_codes = []
+di_scope = {}
+VIN = ""
 
 def get_data():
 
@@ -25,20 +39,49 @@ def get_data():
     return a, b, c, d
 
 
-
 def data_to_json():
     ''' Sammelt Daten aus Eingabefeldern. Diese Daten werden in ein JSON File gelegt (data)'''
-    
     a,b,c,d, = get_data()
+    global di
+    global di_scope
+    global VIN
+
+
 
     data = {'Werkstattname':a, 
             'PLZ':b,
             'WerkstattID':c, 
             'MitarbeiterID':d,
+            'Symptome':di,
+            'Fehlercodes':obd_codes,
             }
+    data = data | di_scope
+    ## Pfad in dem das skript liegt herausfinden
+    cur = pathlib.Path(__file__).parent.resolve()
 
-    with open('data.json', 'a') as f:
+    Messdatenordner = str(cur) + "\\Messdaten"
+    Messdatenordner_Pfad = pathlib.Path(Messdatenordner)
+
+
+    if not os.path.exists(Messdatenordner_Pfad):
+        os.makedirs(Messdatenordner_Pfad)
+    
+    datum = datetime.today().strftime('%Y-%m-%d')
+
+    Messordner_datum = str(Messdatenordner_Pfad) + "\\" +str(datum)
+    Messordner_datum_Pfad = pathlib.Path(Messordner_datum)
+
+    if not os.path.exists(Messordner_datum_Pfad):
+        os.makedirs(Messordner_datum_Pfad)
+
+    ## neuen json file namen generieren
+    json_file_name = str(Messordner_datum_Pfad) + "\\" +  str(VIN) + "_"+str(a) +".json"
+
+    save_dir = Path(json_file_name)
+
+    with open(save_dir, 'a') as f:
         json.dump(data, f)
+
 
 
 def check(i,di):
@@ -49,22 +92,16 @@ def check(i,di):
     return di
     
 
-def save_di_to_json(di):
-    '''di - Dictionary wird im JSON Format gespeichert'''
-    with open('da.json', 'a') as f:
-        json.dump(di, f)
-
-
 def symptome():
     '''Öffnet ein neues Fenster, in dem die Symptome zur Checkbox Auswahl liegen.'''
+    global di
 
     window = tk.Toplevel(root)
     window.title("Symptome")
-    window.geometry("600x600")
+    #window.geometry("125x125")
 
-    symptome = ["Motorkonrollleuchte an", "Motor ruckelt", "Motor lässt sich nicht starten", "keine Gasannahme","Motorkonrollleuchte an", "Motor ruckelt", "Motor lässt sich nicht starten", "keine Gasannahme","Motorkonrollleuchte an", "Motor ruckelt", "Motor lässt sich nicht starten", "keine Gasannahme"]
+    symptome = ["1","2","3","4","5","6","7","8","9","10","11","12"]
     
-    di = {}
 
     # Symtpome innerhalb des dictionarys werden auf "No" gesetzt.
     for i in symptome:
@@ -83,108 +120,138 @@ def symptome():
             checkbox.grid(row=i // 3, column=2)
     
     # Knopf um Dictionary in JSON zu speichern
-    button = tk.Button(window, text="Save", command= lambda: save_di_to_json(di))
-    button.grid(row = 5, column = 0)
     
     # Knopf zum schließen des Fensters
     button = tk.Button(window, text="Close", command=window.destroy)
-    button.grid(row = 6, column = 0)
+    button.grid(row = 6, column = 1)
+
+    return di
 
 
 def select_obd_file():
+    obd = Parse_OBD()
     filename = fd.askopenfilename()
-    print(filename)
+    global obd_codes
+    global VIN
+
+    MsgBox = tk.messagebox.askquestion('Exit App','Richtige Datei ausgewählt? \n' + filename ,icon = 'question')
+
+    if MsgBox == 'yes':
+      ### Hier wird die Datei im angegebenen Pfad in ein JSON File gelegt
+      
+      obd_codes = obd.get_Fehlercodes(filename)
+
+      VIN = obd.get_Fahrzeugident(filename)
+
+
+    else:
+      ### Hier wird nach der neuen Datei gefragt, danach wird sie gespeichert. 
+        filename = fd.askopenfilename()
+
+    
+    
 
 def select_scope_file():
     filename = fd.askopenfilename()
-    print(filename)
+    print(type(filename))
+    global di_scope
+
+    MsgBox = tk.messagebox.askquestion('Exit App','Richtige Datei ausgewählt? \n' + filename ,icon = 'question')
+    
+
+    if MsgBox == 'yes':
+      ### Hier wird die Datei im angegebenen Pfad in ein JSON File gelegt
+      path = Path(filename)
+      df = pd.read_csv(path, sep = ';')
+      print(df.head())
+      di_scope = df.to_dict()
+
+
+    else:
+      ### Hier wird nach der neuen Datei gefragt, danach wird sie gespeichert. 
+        filename = fd.askopenfilename()
+
 
 def Messungen():
     '''Öffnet ein neues Fenster, in dem die Messungen abgelegt werden.'''
 
     window = tk.Toplevel(root)
     window.title("Messungen")
-    window.geometry("600x600")
+    #window.geometry("200x200")
 
     label = tk.Label(window, text="OBD-Protokoll")
-    label.grid(row = 0, column = 0)
+    label.grid(column=0, row=0, sticky="nsew")
 
     button = tk.Button(window, text="OBD-Protokoll - auswählen", command=lambda: select_obd_file())
-    button.grid(row = 1, column = 0)
-
-    label = tk.Label(window, text="OBD-Protokoll")
-    label.grid(row = 2, column = 0)
+    button.grid(column=1, row=0, sticky="nsew")
 
     label = tk.Label(window, text="Picoscope-Datei")
-    button.grid(row = 3, column = 0)
+    label.grid(column=0, row=1, sticky="nsew")
 
     button = tk.Button(window, text="Messung auswählen", command=lambda: select_scope_file())
-    button.grid(row = 1, column = 0)
+    button.grid(column=1, row=1, sticky="nsew")
 
     button = tk.Button(window, text="Close", command=window.destroy)
-    button.grid(row = 4, column = 0)
+    button.grid(column=4, row=4, sticky="nsew")
     
-
-
 
 ''' Hauptfenster wird geöffnet und definiert'''
 
 root = tk.Tk()
-root.title("GUI")
-root.geometry("600x600")
+root.title("AW40")
+# root.geometry("600x600")
 
 ######################################## - Elemente werden innerhalb des Hauptfensters gesetzt - ########################################
 
 label = tk.Label(root, text="Werkstattname")
-label.pack()
-
+label.grid(column=0, row=0, sticky="nsew")
 
 name = tk.Entry(root)
-name.pack()
+name.grid(column=1, row=0, sticky="nsew")
 
 
 label = tk.Label(root, text="PLZ")
-label.pack()
+label.grid(column=0, row=2, sticky="nsew")
 
 
 age = tk.Entry(root)
-age.pack()
+age.grid(column=1, row=2, sticky="nsew")
 
 
 label = tk.Label(root, text="WerksstattID")
-label.pack()
+label.grid(column=0, row=3, sticky="nsew")
 
 
 plz = tk.Entry(root)
-plz.pack()
+plz.grid(column=1, row=3, sticky="nsew")
 
 
 label = tk.Label(root, text="Mitarbeiter ID")
-label.pack()
+label.grid(column=0, row=4, sticky="nsew")
 
 
 MitarbeiterID = tk.Entry(root)
-MitarbeiterID.pack()
+MitarbeiterID.grid(column=1, row=4, sticky="nsew")
 
 
 label = tk.Label(root, text="Symptome")
-label.pack()
+label.grid(column=0, row=5, sticky="nsew")
 
 
 button = tk.Button(root, text="Symptome", command=lambda: symptome())
-button.pack()
+button.grid(column=1, row=5, sticky="nsew")
 
 
 label = tk.Label(root, text="Messungen")
-label.pack()
+label.grid(column=0, row=6, sticky="nsew")
 
 
 button = tk.Button(root, text="Messungen", command=lambda: Messungen())
-button.pack()
+button.grid(column=1, row=6, sticky="nsew")
 
 
 button = tk.Button(root, text="Speichern und beenden", command=lambda: data_to_json())
-button.pack()
+button.grid(column=3, row=9, sticky="nsew")
 
 
 root.mainloop()
