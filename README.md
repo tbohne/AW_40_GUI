@@ -2,7 +2,7 @@
 > Author: Daniel Nowak - Juni 2022
 --------------------------------------
 
-GUI für das Autowerkstatt 4.0 Projekt
+==GUI für das Autowerkstatt 4.0 Projekt==
 
 --------------------------------------
 
