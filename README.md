@@ -23,4 +23,4 @@ ToDo:
   - [x] Messwerte in JSON File einlesen
 
 - [ ] Upload der Dateien auf den Server der THGA
-- [ ] GUI Ansehlich gestalten 
+- [x] GUI Ansehlich gestalten 
