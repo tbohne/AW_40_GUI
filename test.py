@@ -13,7 +13,7 @@ import pathlib
 from pathlib import Path
 from datetime import datetime
 import os
-
+from PIL import ImageTk, Image
 
 
 
@@ -39,7 +39,7 @@ def get_data():
     return a, b, c, d
 
 
-def data_to_json():
+def data_to_json(root):
     ''' Sammelt Daten aus Eingabefeldern. Diese Daten werden in ein JSON File gelegt (data)'''
     a,b,c,d, = get_data()
     global di
@@ -82,11 +82,11 @@ def data_to_json():
     with open(save_dir, 'a') as f:
         json.dump(data, f)
 
+    root.destroy()
 
 
 def check(i,di):
     '''Checkfunktion. Diese Funktion stellt den Dictionary-Eintrag von "No" auf "Yes".'''
-
     if di[i] == "No":
         di [i] = "Yes"
     return di
@@ -98,7 +98,10 @@ def symptome():
 
     window = tk.Toplevel(root)
     window.title("Symptome")
-    #window.geometry("125x125")
+    window.geometry("400x400")
+    root.eval(f'tk::PlaceWindow {str(window)} center')
+    window.iconbitmap('prolab (1).ico')
+    
 
     symptome = ["1","2","3","4","5","6","7","8","9","10","11","12"]
     
@@ -123,12 +126,15 @@ def symptome():
     
     # Knopf zum schließen des Fensters
     button = tk.Button(window, text="Close", command=window.destroy)
-    button.grid(row = 6, column = 1)
+    button.grid(column=3, row=9)
 
     return di
 
 
 def select_obd_file():
+    '''
+    Funktion zum einlesen des OBD-Logfiles. Rückgabewerte sind, bei richtig ausgewählter Datei die obd Fehlercodes als Liste, sowie die VIN als String. 
+    '''
     obd = Parse_OBD()
     filename = fd.askopenfilename()
     global obd_codes
@@ -152,8 +158,10 @@ def select_obd_file():
     
 
 def select_scope_file():
+    '''Funktion zum einlesen der CSV-Dateien. Bei richtig ausgewählter Datei werden die Messdaten in ein Datafram gelegt, welches weiterhin in ein
+       Dictionary geschrieben wird.
+    '''
     filename = fd.askopenfilename()
-    print(type(filename))
     global di_scope
 
     MsgBox = tk.messagebox.askquestion('Exit App','Richtige Datei ausgewählt? \n' + filename ,icon = 'question')
@@ -177,12 +185,14 @@ def Messungen():
 
     window = tk.Toplevel(root)
     window.title("Messungen")
-    #window.geometry("200x200")
+    root.eval(f'tk::PlaceWindow {str(window)} center')
+    window.iconbitmap('prolab (1).ico')
+    window.geometry("275x80")
 
     label = tk.Label(window, text="OBD-Protokoll")
     label.grid(column=0, row=0, sticky="nsew")
 
-    button = tk.Button(window, text="OBD-Protokoll - auswählen", command=lambda: select_obd_file())
+    button = tk.Button(window, text="Logfile auswählen", command=lambda: select_obd_file())
     button.grid(column=1, row=0, sticky="nsew")
 
     label = tk.Label(window, text="Picoscope-Datei")
@@ -191,17 +201,27 @@ def Messungen():
     button = tk.Button(window, text="Messung auswählen", command=lambda: select_scope_file())
     button.grid(column=1, row=1, sticky="nsew")
 
-    button = tk.Button(window, text="Close", command=window.destroy)
-    button.grid(column=4, row=4, sticky="nsew")
+    button = tk.Button(window, text="schließen", command=window.destroy)
+    button.grid(column=2, row=2)
     
-
+######################################## - Hauptfenster - ########################################
 ''' Hauptfenster wird geöffnet und definiert'''
 
 root = tk.Tk()
 root.title("AW40")
-# root.geometry("600x600")
+root.geometry("350x180")
+root.iconbitmap('prolab (1).ico')
 
-######################################## - Elemente werden innerhalb des Hauptfensters gesetzt - ########################################
+root.eval('tk::PlaceWindow . center')
+
+
+
+
+image=Image.open('aw40_lmis.png')
+img=image.resize((80, 80))
+my_img=ImageTk.PhotoImage(img)
+label = tk.Label(root, image=my_img)
+label.grid(column=3, row=3, rowspan= 3, padx = 1, columnspan= 2)
 
 label = tk.Label(root, text="Werkstattname")
 label.grid(column=0, row=0, sticky="nsew")
@@ -250,8 +270,7 @@ button = tk.Button(root, text="Messungen", command=lambda: Messungen())
 button.grid(column=1, row=6, sticky="nsew")
 
 
-button = tk.Button(root, text="Speichern und beenden", command=lambda: data_to_json())
+button = tk.Button(root, text="Speichern und beenden", command=lambda: data_to_json(root))
 button.grid(column=3, row=9, sticky="nsew")
-
 
 root.mainloop()
