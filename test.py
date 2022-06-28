@@ -22,6 +22,7 @@ obd_codes = []
 di_scope = {}
 VIN = ""
 
+
 def get_data():
 
     ''' Funktion zum Auslesen der Eingabefelder der GUI für:
@@ -33,7 +34,7 @@ def get_data():
 
     '''
     a = name.get()
-    b = age.get()
+    b = plz.get()
     c = plz.get()
     d = MitarbeiterID.get()
     return a, b, c, d
@@ -203,7 +204,11 @@ def Messungen():
 
     button = tk.Button(window, text="schließen", command=window.destroy)
     button.grid(column=2, row=2)
-    
+
+
+def nutzer_speichern():
+    Werkstattname.set()
+
 ######################################## - Hauptfenster - ########################################
 ''' Hauptfenster wird geöffnet und definiert'''
 
@@ -215,8 +220,6 @@ root.iconbitmap('prolab (1).ico')
 root.eval('tk::PlaceWindow . center')
 
 
-
-
 image=Image.open('aw40_lmis.png')
 img=image.resize((80, 80))
 my_img=ImageTk.PhotoImage(img)
@@ -226,7 +229,8 @@ label.grid(column=3, row=3, rowspan= 3, padx = 1, columnspan= 2)
 label = tk.Label(root, text="Werkstattname")
 label.grid(column=0, row=0, sticky="nsew")
 
-name = tk.Entry(root)
+Werkstattname = tk.StringVar()
+name = tk.Entry(root, textvariable=Werkstattname)
 name.grid(column=1, row=0, sticky="nsew")
 
 
@@ -234,8 +238,8 @@ label = tk.Label(root, text="PLZ")
 label.grid(column=0, row=2, sticky="nsew")
 
 
-age = tk.Entry(root)
-age.grid(column=1, row=2, sticky="nsew")
+plz = tk.Entry(root, )
+plz.grid(column=1, row=2, sticky="nsew")
 
 
 label = tk.Label(root, text="WerksstattID")
