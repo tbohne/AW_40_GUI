@@ -206,8 +206,8 @@ def Messungen():
     button.grid(column=2, row=2)
 
 
-def nutzer_speichern():
-    Werkstattname.set()
+
+    
 
 ######################################## - Hauptfenster - ########################################
 ''' Hauptfenster wird geöffnet und definiert'''
