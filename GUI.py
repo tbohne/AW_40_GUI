@@ -28,14 +28,13 @@ scope_data = []
 VIN = ""
 Kilometerstand = ""
 Date = ""
-Kilometerstand = ""
 
 
 def change_symptom_value(i, di):
     """
     Checkfunktion. Diese Funktion stellt den Dictionary-Eintrag von "No" auf "Yes".
     """
-    if di[i] == False:
+    if not di[i]:
         di[i] = True
     return di
 
@@ -96,13 +95,13 @@ def select_obd_file():
     MsgBox = tk.messagebox.askquestion('Exit App', 'Richtige Datei ausgewählt? \n' + filename, icon='question')
 
     if MsgBox == 'yes':
-        ### Hier wird die Datei im angegebenen Pfad in ein JSON File gelegt
+        # Hier wird die Datei im angegebenen Pfad in ein JSON File gelegt
         obd_codes = obd.get_Fehlercodes(filename)
         VIN = obd.get_Fahrzeugident(filename)
         Date = obd.get_Datetime(filename)
         Kilometerstand = obd.get_Kilometerstand(filename)
     else:
-        ### Hier wird nach der neuen Datei gefragt, danach wird sie gespeichert.
+        # Hier wird nach der neuen Datei gefragt, danach wird sie gespeichert.
         filename = fd.askopenfilename()
 
 
@@ -117,7 +116,7 @@ def select_scope_file():
     MsgBox = tk.messagebox.askquestion('Exit App', 'Richtige Datei ausgewählt? \n' + filename, icon='question')
 
     if MsgBox == 'yes':
-        ### Hier wird die Datei im angegebenen Pfad in ein JSON File gelegt
+        ## Hier wird die Datei im angegebenen Pfad in ein JSON File gelegt
         path = Path(filename)
         df = pd.read_csv(path, sep=';')  # .values
         df = df.drop('Zeit', 1)
@@ -126,7 +125,7 @@ def select_scope_file():
         scope_data = np.array(scope_data).tolist()
 
     else:
-        ### Hier wird nach der neuen Datei gefragt, danach wird sie gespeichert.
+        ## Hier wird nach der neuen Datei gefragt, danach wird sie gespeichert.
         filename = fd.askopenfilename()
 
 
@@ -139,7 +138,6 @@ def Messungen(root):
     root.eval(f'tk::PlaceWindow {str(window)} center')
     img = ImageTk.PhotoImage(file=str(pathlib.Path(__file__).parent.resolve()) + PROLAB_ICON)
     window.tk.call('wm', 'iconphoto', root._w, img)
-
 
     window.geometry("275x80")
 
@@ -202,7 +200,7 @@ def data_to_json(root, name, plz, MitarbeiterID):
             'Abtastrate': len(scope_data),
             'Messdaten': scope_data,
             }
-    ## Pfad in dem das skript liegt herausfinden
+    # Pfad in dem das skript liegt herausfinden
     cur = pathlib.Path(__file__).parent.resolve()
 
     Messdatenordner = str(cur) + "\\Messdaten"
@@ -219,7 +217,7 @@ def data_to_json(root, name, plz, MitarbeiterID):
     if not os.path.exists(Messordner_datum_Pfad):
         os.makedirs(Messordner_datum_Pfad)
 
-    ## neuen json file namen generieren
+    # neuen json file namen generieren
     json_file_name = str(Messordner_datum_Pfad) + "\\" + str(VIN) + "_" + str(a) + ".json"
 
     save_dir = Path(json_file_name)
