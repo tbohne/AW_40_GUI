@@ -19,6 +19,14 @@ class Parse_OBD:
         self.filename = None
         self.iso_filename = None
     
+    def get_Datetime(self, filename):
+        self.filename = filename
+        
+        with open(filename) as f:
+            for line in f:
+                    datum = line
+                    break
+        return datum
     
     def get_Fahrzeugident(self, filename):
         self.filename = filename
@@ -34,7 +42,7 @@ class Parse_OBD:
         return VIN
                 
     def get_Kilometerstand(self, filename):
-        self.filename = filename
+        self.filenames = filename
         km = 'Kilometerstand:'
         
         with open(filename) as f:
@@ -42,9 +50,10 @@ class Parse_OBD:
             for line in f:
                 if km in line:
                     km = line.split(' ')
-                    km = km[1]
-                    print("Kilometerstand = " + km)
+                    km = km[5]
+                    km = re.sub('km','',km)
                     break
+        return km
     
     def get_Fahrzeugtyp(self,filename):
         self.filename = filename
@@ -90,7 +99,6 @@ class Parse_OBD:
                 if match_U is not None:
                     codes.append(match_U.group())
                 
-        
         return codes
     
     
