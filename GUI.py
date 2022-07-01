@@ -29,22 +29,7 @@ Kilometerstand = ""
 
 
 
-def get_data():
 
-    ''' Funktion zum Auslesen der Eingabefelder der GUI für:
-
-        a = Werkstattname
-        b = PLZ
-        c = WerkstattID
-        d = MitarbeiterID
-
-    '''
-    a = name.get()
-    b = plz.get()
-    c = plz.get()
-    d = MitarbeiterID.get()
-
-    return a, b, c, d
 
 
 def change_symptom_value(i,di):
@@ -172,7 +157,23 @@ def Messungen():
     button = tk.Button(window, text="schließen", command=window.destroy)
     button.grid(column=2, row=2)
 
+def get_data():
 
+    ''' Funktion zum Auslesen der Eingabefelder der GUI für:
+
+        a = Werkstattname
+        b = PLZ
+        c = WerkstattID
+        d = MitarbeiterID
+
+    '''
+    a = name.get()
+    b = plz.get()
+    c = plz.get()
+    d = MitarbeiterID.get()
+
+    return a, b, c, d
+    
 def data_to_json(root):
     ''' Sammelt Daten aus Eingabefeldern. Diese Daten werden in ein JSON File gelegt (data)'''
     a,b,c,d = get_data()
