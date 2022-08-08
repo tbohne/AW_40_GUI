@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from PIL import ImageTk, Image
 
-from parse import Parse_OBD
+from AW_40_GUI import parse
 
 LMIS_ICON = '/img/aw40_lmis.png'
 PROLAB_ICON = '/img/prolab.ico'
@@ -85,7 +85,7 @@ def select_obd_file():
     Funktion zum einlesen des OBD-Logfiles. Rückgabewerte sind, bei richtig ausgewählter Datei die obd Fehlercodes
     als Liste, sowie die VIN als String.
     """
-    obd = Parse_OBD()
+    obd = parse.Parse_OBD()
     filename = fd.askopenfilename()
     global obd_codes
     global VIN
@@ -201,7 +201,7 @@ def data_to_json(root, name, plz, MitarbeiterID):
             'Messdaten': scope_data,
             }
     # Pfad in dem das skript liegt herausfinden
-    cur = pathlib.Path(__file__).parent.resolve()
+    cur = pathlib.Path(__file__).resolve()
 
     Messdatenordner = str(cur) + "\\Messdaten"
     Messdatenordner_Pfad = pathlib.Path(Messdatenordner)
