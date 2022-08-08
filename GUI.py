@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from PIL import ImageTk, Image
 
-from AW_40_GUI import parse
+import parse
 
 LMIS_ICON = '/img/aw40_lmis.png'
 PROLAB_ICON = '/img/prolab.ico'
